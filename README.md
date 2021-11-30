@@ -1,2 +1,6 @@
 
-This project is part of the [Building a real time React appliccation with Parse](https://blog.back4app.com/building-a-real-time-react-application-with-parse/) tutorial available on the Back4App blog
+## SEE HOW IT WORKS 
+
+#### MY CODE SANDBOX :
+
+https://codesandbox.io/s/hardcore-glitter-rs924?file=/src/routes/Home/index.js
