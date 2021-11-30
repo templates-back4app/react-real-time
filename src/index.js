@@ -3,6 +3,14 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { initializeParse } from '@parse/react';
+
+// make a project in back4app.com and get these values from there
+initializeParse(
+  'YOUR_SERVER_URL',
+  'YOUR_APPLICATION_ID',
+  'YOUR_JAVASCRIPT_KEY'
+);
 
 ReactDOM.render(
   <React.StrictMode>
