@@ -6,7 +6,9 @@ import { useParseQuery } from '@parse/react';
 
 
 export default function Home() {
-  const [postText, setPostText] = useState('');
+  const [checkbox, setCheckbox] = useState(false);
+  const [title, setTitle] = useState('');
+  const [overwolfId, setOverwolfId] = useState('');
   const history = useHistory();
 
   const Character = Parse.Object.extend('Game');
@@ -34,7 +36,7 @@ export default function Home() {
   } = useParseQuery(
     characterQuery, // The Parse Query to be used
     {
-      enableLocalDatastore: true, // Enables cache in local datastore (default: true)
+      enableLocalDatastore: false, // Enables cache in local datastore (default: true)
       //cancel web socket conection
       enableLiveQuery: false // Enables live query for real-time update (default: true)
     }
@@ -45,12 +47,13 @@ export default function Home() {
     const Post = Parse.Object.extend("Game");
     const newPost = new Post();
     newPost.save({
-      name: postText,
-      authorName: Parse.User.current().get('username'),
+      Title: title,
+      overwolfId: overwolfId,
     });
     //get data once after post
     reload()
-    setPostText(" ");
+    setTitle()
+    setOverwolfId()
   };
 
   return (
@@ -62,17 +65,23 @@ export default function Home() {
       </header>
 
       <div className="posts-container">
-        <form onSubmit={handleSubmitPost} className="actions">
-          <textarea  value={postText} onChange={event => setPostText(event.currentTarget.value)} />
-          <button type="submit" onKeyPress={handleSubmitPost}>post</button>
-        </form>
+        {/* <form  className="actions"> */}
+          title :<input value={title} onChange={event => setTitle(event.currentTarget.value)} />
+          overwolfId :<input value={overwolfId} onChange={event => setOverwolfId(event.currentTarget.value)} />
+          {/* active <input value={active} onChange={event => setOverwolfId(event.currentTarget.value)} /> */}
+          active :<input type="checkbox" defaultChecked={checkbox} onChange={()=>{
+            setCheckbox(!checkbox)
+            console.log(checkbox)
+          }} />
+          <button type="button" className='submitButton' onClick={handleSubmitPost}  onKeyPress={handleSubmitPost}>post</button>
+        {/* </form> */}
 
 
         <div className="post-list">
           {results && results.map((user, index) => (
             <div className="post" key={index}>
-              <span>{user.get('authorName')}</span>
-              <p>{user.get('name')}</p>
+              <span>{user.get('Title')}</span>
+              <p>overwolf ID : {user.get('overwolfId')} &emsp;&emsp; &emsp; activate : {user.get('active').toString()}</p>
             </div>))}
         </div>
       </div>
