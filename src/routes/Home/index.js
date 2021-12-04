@@ -45,16 +45,52 @@ export default function Home() {
   const handleSubmitPost = (e) => {
     e.preventDefault();
     const Post = Parse.Object.extend("Game");
-    const newPost = new Post();
-    newPost.save({
-      Title: title,
-      overwolfId: overwolfId,
-    });
+
+    // Create a new instance of that class
+    // const newPost = new Post();
+    // newPost.save({
+    //   Title: title,
+    //   overwolfId: overwolfId,
+    // });
+    deleteItemWithId()
     //get data once after post
     reload()
-    setTitle()
-    setOverwolfId()
+    setTitle('')
+    setOverwolfId('')
   };
+
+  // UPDATE A SPECIFIC OBJECT IN DATABASE
+  const updateLeagueOfLegendsTitle = () => {
+    const Post = Parse.Object.extend("Game");
+    const item = new Post();
+
+    // SET THE OBJECT ID 
+    item.id = "S1lTgKrwgL";
+
+    // SET THE NEW VALUE
+    item.set("Title", title);
+
+    // SAVE THE OBJECT
+    item.save()
+  }
+
+  // DELETE A SPECIFIC ITEM IN AN OBJECT
+  const deleteItemWithId = () => {
+    const Post = Parse.Object.extend("Game");
+    const theObject = new Post();
+
+    // SET THE OBJECT ID 
+    theObject.id = "S1lTgKrwgL";
+
+    // DELETE  ANY SUBJECT OF AN ITEM THAT YOU WANT
+    theObject.unset("active");
+    theObject.unset("Title");
+
+    // Saves the field deletion to the Parse Cloud.
+    // If the object's field is an array, call save() after every unset() operation.
+    theObject.save();
+  }
+
 
   return (
     <div className="App">
@@ -66,14 +102,14 @@ export default function Home() {
 
       <div className="posts-container">
         {/* <form  className="actions"> */}
-          title :<input value={title} onChange={event => setTitle(event.currentTarget.value)} />
-          overwolfId :<input value={overwolfId} onChange={event => setOverwolfId(event.currentTarget.value)} />
-          {/* active <input value={active} onChange={event => setOverwolfId(event.currentTarget.value)} /> */}
-          active :<input type="checkbox" defaultChecked={checkbox} onChange={()=>{
-            setCheckbox(!checkbox)
-            console.log(checkbox)
-          }} />
-          <button type="button" className='submitButton' onClick={handleSubmitPost}  onKeyPress={handleSubmitPost}>post</button>
+        title :<input value={title} onChange={event => setTitle(event.currentTarget.value)} />
+        overwolfId :<input value={overwolfId} onChange={event => setOverwolfId(event.currentTarget.value)} />
+        {/* active <input value={active} onChange={event => setOverwolfId(event.currentTarget.value)} /> */}
+        active :<input type="checkbox" defaultChecked={checkbox} onChange={() => {
+          setCheckbox(!checkbox)
+          console.log(checkbox)
+        }} />
+        <button type="button" className='submitButton' onClick={handleSubmitPost} onKeyPress={handleSubmitPost}>post</button>
         {/* </form> */}
 
 
@@ -81,7 +117,7 @@ export default function Home() {
           {results && results.map((user, index) => (
             <div className="post" key={index}>
               <span>{user.get('Title')}</span>
-              <p>overwolf ID : {user.get('overwolfId')} &emsp;&emsp; &emsp; activate : {user.get('active').toString()}</p>
+              <p>overwolf ID : {user.get('overwolfId')} &emsp;&emsp; &emsp; activate : {user.get('active')?.toString()}</p>
             </div>))}
         </div>
       </div>
