@@ -1,6 +1,3 @@
 
-## SEE HOW IT WORKS 
+## IT'S A SAMPLE FOR WORKING WITH REACT PARSE CRUD FUNCTION
 
-#### MY CODE SANDBOX :
-
-https://codesandbox.io/s/festive-architecture-pqm3u
