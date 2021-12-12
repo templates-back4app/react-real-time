@@ -17,6 +17,7 @@ export default function Home() {
   useEffect(() => {
     async function checkUser() {
       const currentUser = await Parse.User.currentAsync();
+      // updateCurrentUserInformation()
       if (!currentUser) {
         alert('You need to be logged in to access this page');
         history.push("/auth");
@@ -47,12 +48,12 @@ export default function Home() {
     const Post = Parse.Object.extend("Game");
 
     // Create a new instance of that class
-    // const newPost = new Post();
-    // newPost.save({
-    //   Title: title,
-    //   overwolfId: overwolfId,
-    // });
-    deleteItemWithId()
+    const newPost = new Post();
+    newPost.save({
+      Title: title,
+      overwolfId: overwolfId,
+    });
+
     //get data once after post
     reload()
     setTitle('')
@@ -70,7 +71,7 @@ export default function Home() {
     // SET THE NEW VALUE
     item.set("Title", title);
 
-    // SAVE THE OBJECT
+    // SAVE THE OBJECT (UPDATE)
     item.save()
   }
 
@@ -87,9 +88,41 @@ export default function Home() {
     theObject.unset("Title");
 
     // Saves the field deletion to the Parse Cloud.
-    // If the object's field is an array, call save() after every unset() operation.
+    // IMPORTANT !  =>>  If the object's field is an array, call save() after every unset() operation.
     theObject.save();
   }
+
+  // UPDATE USER INFORMATION 
+  const updateCurrentUserInformation = () => {
+    async function update() {
+      // const currentUser = await Parse.User.currentAsync();
+      const currentUser = await Parse.User.current();
+      if (currentUser) {
+        currentUser.set('username', "newUsername")
+        currentUser.setPassword("password")
+        // you must save the user to update the password imedietely after set password
+        currentUser.save();
+
+        currentUser.set('name', 'name');
+        currentUser.set('family', 'family');
+        currentUser.set('age', 'age');
+        currentUser.set('email', 'email');
+        currentUser.set('status', 'status');
+
+        currentUser.save()
+      }
+    }
+    update()
+  }
+
+  function resetPassword() {
+    Parse.User.requestPasswordReset('email').then(function () {
+      alert("Password reset request was sent successfully");
+    }).catch(function (error) {
+      alert("The login failed with error: " + error.code + " " + error.message);
+    });
+  }
+
 
 
   return (
