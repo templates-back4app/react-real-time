@@ -5,10 +5,11 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { initializeParse } from '@parse/react';
 
+// my own parse initialization (parse project id and key)
 initializeParse(
-  'YOUR_SERVER_URL',
-  'YOUR_APPLICATION_ID',
-  'YOUR_JAVASCRIPT_KEY'
+  'https://parseapi.back4app.com',
+  'nnpcyABR57hYGfg2B4EiJgImtgB18CF1kF3gGk0J',
+  'OAvDSFwTiOqMObGY98zWqQgKx14vIz9LYs4mh0MD'
 );
 
 ReactDOM.render(
