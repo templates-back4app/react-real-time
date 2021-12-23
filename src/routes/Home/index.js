@@ -1,35 +1,158 @@
+import { useEffect, useState } from 'react'
+import { useHistory } from 'react-router-dom';
+import Parse from 'parse';
 import './Home.css'
+import { useParseQuery } from '@parse/react';
+
 
 export default function Home() {
+  const [checkbox, setCheckbox] = useState(false);
+  const [title, setTitle] = useState('');
+  const [overwolfId, setOverwolfId] = useState('');
+  const history = useHistory();
 
-  const initialPosts = [{
-    userName: 'User 1',
-    post: "Hello, I'm super happy to be a part of this social network"
-  }]
-  
+  const Character = Parse.Object.extend('Game');
+  const characterQuery = new Parse.Query(Character);
+
+  useEffect(() => {
+    async function checkUser() {
+      const currentUser = await Parse.User.currentAsync();
+      // updateCurrentUserInformation()
+      if (!currentUser) {
+        alert('You need to be logged in to access this page');
+        history.push("/auth");
+      }
+    }
+    checkUser();
+  }, []);
+
+  const {
+    isLive, // Indicates that Parse Live Query is connected
+    isLoading, // Indicates that the initial load is being processed
+    isSyncing, // Indicates that the library is getting the latest data from Parse Server
+    results, // Stores the current results in an array of Parse Objects
+    count, // Stores the current results count
+    error, // Stores any error
+    reload // Function that can be used to reload the data
+  } = useParseQuery(
+    characterQuery, // The Parse Query to be used
+    {
+      enableLocalDatastore: false, // Enables cache in local datastore (default: true)
+      //cancel web socket conection
+      enableLiveQuery: false // Enables live query for real-time update (default: true)
+    }
+  );
+
+  const handleSubmitPost = (e) => {
+    e.preventDefault();
+    const Post = Parse.Object.extend("Game");
+
+    // Create a new instance of that class
+    const newPost = new Post();
+    newPost.save({
+      Title: title,
+      overwolfId: overwolfId,
+    });
+
+    //get data once after post
+    reload()
+    setTitle('')
+    setOverwolfId('')
+  };
+
+  // UPDATE A SPECIFIC OBJECT IN DATABASE
+  const updateLeagueOfLegendsTitle = () => {
+    const Post = Parse.Object.extend("Game");
+    const item = new Post();
+
+    // SET THE OBJECT ID 
+    item.id = "S1lTgKrwgL";
+
+    // SET THE NEW VALUE
+    item.set("Title", title);
+
+    // SAVE THE OBJECT (UPDATE)
+    item.save()
+  }
+
+  // DELETE A SPECIFIC ITEM IN AN OBJECT
+  const deleteItemWithId = () => {
+    const Post = Parse.Object.extend("Game");
+    const theObject = new Post();
+
+    // SET THE OBJECT ID 
+    theObject.id = "S1lTgKrwgL";
+
+    // DELETE  ANY SUBJECT OF AN ITEM THAT YOU WANT
+    theObject.unset("active");
+    theObject.unset("Title");
+
+    // Saves the field deletion to the Parse Cloud.
+    // IMPORTANT !  =>>  If the object's field is an array, call save() after every unset() operation.
+    theObject.save();
+  }
+
+  // UPDATE USER INFORMATION 
+  const updateCurrentUserInformation = () => {
+    async function update() {
+      // const currentUser = await Parse.User.currentAsync();
+      const currentUser = await Parse.User.current();
+      if (currentUser) {
+        currentUser.set('username', "newUsername")
+        currentUser.setPassword("password")
+        // you must save the user to update the password imedietely after set password
+        currentUser.save();
+
+        currentUser.set('name', 'name');
+        currentUser.set('family', 'family');
+        currentUser.set('age', 'age');
+        currentUser.set('email', 'email');
+        currentUser.set('status', 'status');
+
+        currentUser.save()
+      }
+    }
+    update()
+  }
+
+  function resetPassword() {
+    Parse.User.requestPasswordReset('email').then(function () {
+      alert("Password reset request was sent successfully");
+    }).catch(function (error) {
+      alert("The login failed with error: " + error.code + " " + error.message);
+    });
+  }
+
+
 
   return (
     <div className="App">
       <header className="app-header">
-      <img className="logo" alt="back4app's logo" src={'https://blog.back4app.com/wp-content/uploads/2019/05/back4app-white-logo-500px.png'} />
+        <img className="logo" alt="back4app's logo" src={'https://blog.back4app.com/wp-content/uploads/2019/05/back4app-white-logo-500px.png'} />
         <h2 className="spacing">parse hooks</h2>
         <span>social network</span>
       </header>
-      
+
       <div className="posts-container">
-      <div className="actions">
-        <textarea />
-        <button>post</button>
-      </div>
+        {/* <form  className="actions"> */}
+        title :<input value={title} onChange={event => setTitle(event.currentTarget.value)} />
+        overwolfId :<input value={overwolfId} onChange={event => setOverwolfId(event.currentTarget.value)} />
+        {/* active <input value={active} onChange={event => setOverwolfId(event.currentTarget.value)} /> */}
+        active :<input type="checkbox" defaultChecked={checkbox} onChange={() => {
+          setCheckbox(!checkbox)
+          console.log(checkbox)
+        }} />
+        <button type="button" className='submitButton' onClick={handleSubmitPost} onKeyPress={handleSubmitPost}>post</button>
+        {/* </form> */}
 
 
-      <div className="post-list">
-        {initialPosts && initialPosts.map(({userName, post},index) => (
-        <div className="post" key={index}>
-          <span>{userName}</span>
-          <p>{post}</p>
-        </div>))}
-      </div>
+        <div className="post-list">
+          {results && results.map((user, index) => (
+            <div className="post" key={index}>
+              <span>{user.get('Title')}</span>
+              <p>overwolf ID : {user.get('overwolfId')} &emsp;&emsp; &emsp; activate : {user.get('active')?.toString()}</p>
+            </div>))}
+        </div>
       </div>
     </div>
   );
