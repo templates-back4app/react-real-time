@@ -123,6 +123,11 @@ export default function Home() {
     });
   }
 
+  const handleCallCloudFunction =async () => {
+   const res=await Parse.Cloud.run('save-file')
+   console.log(res)
+  }
+
 
 
   return (
@@ -143,6 +148,7 @@ export default function Home() {
           console.log(checkbox)
         }} />
         <button type="button" className='submitButton' onClick={handleSubmitPost} onKeyPress={handleSubmitPost}>post</button>
+        <button type="button" className='submitButton' onClick={handleCallCloudFunction} >cloud </button>
         {/* </form> */}
 
 
