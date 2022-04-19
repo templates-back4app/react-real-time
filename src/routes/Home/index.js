@@ -123,8 +123,8 @@ export default function Home() {
     });
   }
 
-  const handleCallCloudFunction =async () => {
-   const res=await Parse.Cloud.run('save-file')
+  const handleCallCloudFunction = async () => {
+  const res = await Parse.Cloud.run('save-file')
    console.log(res)
   }
 
@@ -149,7 +149,29 @@ export default function Home() {
         }} />
         <button type="button" className='submitButton' onClick={handleSubmitPost} onKeyPress={handleSubmitPost}>post</button>
         <button type="button" className='submitButton' onClick={handleCallCloudFunction} >cloud </button>
+
         {/* </form> */}
+
+        <input type={'file'} onChange={async (e) => {
+          const Post = Parse.Object.extend("Post");
+          const newPost = new Parse.Query(Post);
+          newPost.equalTo('text', 'background')
+          const result = await newPost.first()
+
+          var fileUploadControl = e.target;
+          if (fileUploadControl.files.length > 0) {
+            var file = fileUploadControl.files[0];
+            var name = "photo.png";
+            var parseFile = new Parse.File(name, file);
+            parseFile.save().then(function () {
+              result.set("image", parseFile);
+              result.save();
+            }, function (error) {
+              console.log(error)
+            });
+          }
+        }} />
+
 
 
         <div className="post-list">
